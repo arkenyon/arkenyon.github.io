@@ -1,0 +1,530 @@
+<html>
+
+<head>
+<title>Iconoclash</TITLE>
+
+
+<script language="JavaScript">
+<!--
+
+var whosTurn = "p1";
+var opponent = "p2";
+var maxSize = 7;
+var gameOver = false;
+var moveType = "normal";
+
+<!----------------- CREATE THE GRID ---------------//-->
+
+cell = new Object();
+
+document.writeln("<table cellspacing=0 cellpadding=1 border=0 align=left><tr>");
+
+for (rowInit = 1; rowInit <= maxSize; rowInit++) {
+
+  for (colInit = 1; colInit <= maxSize; colInit++) {
+    eval("cell[" + rowInit + colInit + "] = 'empty'");
+
+    tdString  = "<td><a href=\"javascript:cellClick("   ;
+    tdString += "'" + rowInit + "', '" + colInit + "'"  ;
+    tdString += ");\"><img name=\""                     ;
+    tdString += "img" + rowInit + colInit              ;
+    tdString += "\" src=\"empty.gif\" border=0></a></td>"        ;
+
+    document.writeln(tdString);
+  }
+  
+  document.writeln("</tr><tr>");
+}
+
+document.writeln("</tr></table>");
+
+
+
+<!-------------- CREATE THE OPTIONS MENU ------------//-->
+
+document.writeln( "<table cellspacing=0 cellpadding=1 border=0><tr>" );
+document.writeln( "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" );
+
+document.writeln( "<td><a href=\"javascript:setMove('normal')\">"    );
+document.writeln( "<img name=\"normal\" src=\"p1_1.gif\" border=0" );
+document.writeln( "alt=\"Destroys all adjacent opponent icons\"></a></td>" );
+
+document.writeln( "</tr><tr><td></td>" );
+
+document.writeln( "<td><a href=\"javascript:setMove('yinyang')\">" );
+document.writeln( "<img name=\"yinyang\" src=\"yinyang.gif\" border=0" );
+document.writeln( "alt=\"Flips all horizontal and vertical icons\"></a></td>" );
+
+document.writeln( "</tr><tr><td></td>" );
+
+document.writeln( "<td><a href=\"javascript:alert('Not yet implemented')\">" );
+document.writeln( "<img name=\"nuke\" src=\"nuke.gif\" border=0" );
+document.writeln( "alt=\"Destroys all icons within two adjacent cells\"></a></td>" );
+
+document.writeln( "</tr><tr><td></td>" );
+
+document.writeln( "<td><a href=\"javascript:alert('Not yet implemented')\">" );
+document.writeln( "<img name=\"shroom\" src=\"shroom1.gif\" border=0></a></td>" );
+
+document.writeln( "</tr></table>" );
+
+
+<!---------- INITIALIZE THE STARTING PLAYERS --------//-->
+
+cell[11]  = "p1"
+p1CellImg = getImgName('1', '1');
+document[p1CellImg].src = "p1.gif";
+
+eval("cell[" + maxSize + maxSize + "] = 'p2'");
+p2CellImg = getImgName(maxSize, maxSize);
+document[p2CellImg].src = "p2.gif";
+
+
+
+<!---------------- STANDARD FUNCTIONS --------------//-->
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i>a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+
+<!---------------- LOW LEVEL GRID FUNCTIONS --------------//-->
+
+function rowStart(numRow, displace) {
+    if (numRow == "1") {
+      stRow = 1;
+    }else{
+      stRow = eval(numRow + " - " + displace);
+    }
+
+  return stRow;
+}
+
+
+function rowEnd(numRow, displace) {
+    if (numRow == maxSize) {
+      endRow = maxSize;
+    }else{
+      endRow = eval(numRow + " + " + displace);
+    }
+
+  return endRow;
+}
+
+
+function colStart(numCol, displace) {
+    if (numCol == "1") {
+      stCol = 1;
+    }else{
+      stCol = eval(numCol + " - " + displace);
+    }
+
+  return stCol;
+}
+
+
+function colEnd(numCol, displace) {
+    if (numCol == maxSize) {
+      endCol = maxSize;
+    }else{
+      endCol = eval(numCol + " + " + displace);
+    }
+
+  return endCol;
+}
+
+
+
+<!---------------- LOW LEVEL IMAGE FUNCTIONS --------------//-->
+
+function updateCell(nRow, nCol, newVal) {
+  eval("cell[" + nRow + nCol + "] = '" + newVal + "'");
+}
+
+
+function getImgName(rowRef, colRef) {
+  var nameOfImg = "img" + rowRef + colRef;
+  return nameOfImg;
+}
+
+
+function getImgFile(imgName) {
+  picFile = document[imgName].src;
+  return picFile;
+}
+
+
+function getFlashImg(imgFilename) {
+  strLength = imgFilename.length;
+  imgSubstr = imgFilename.substr(0, strLength - 4);
+  flashImgFile = imgSubstr + "_1.gif";
+  return flashImgFile;
+}
+
+
+function getAngryImg(imgFilename) {
+  strLength = imgFilename.length;
+  imgSubstr = imgFilename.substr(0, strLength - 4);
+  angryImgFile = imgSubstr + "_a.gif";
+  return angryImgFile;
+}
+
+function updateImg(nameOfImg, newImg) {
+  document[nameOfImg].src = newImg;
+}
+
+
+function animate(cellToAnimate, imgToUse, delayTime) {
+  eval("setTimeout(\"updateImg('" + cellToAnimate + "', '" + imgToUse + "')\",  " + delayTime +")")
+}
+
+
+function resetMenuImages() {
+
+  if (whosTurn == "p1") {
+    updateImg("normal", "p1.gif");
+  }else{
+    updateImg("normal", "p2.gif");
+  }    
+
+  updateImg("yinyang", "yinyang.gif");
+  updateImg("nuke", "nuke.gif");
+}
+
+
+<!---------------- LOW LEVEL CELL FUNCTIONS --------------//-->
+
+function checkStatus(rNum, cNum) {
+  cStatus = eval("cell[" + rNum + cNum + "]");
+
+  return cStatus;
+}
+
+
+function cellAction(rowNum, colNum, newVal) {
+  var imgName = getImgName(rowNum, colNum);
+
+  switch (newVal) {
+
+    case "invalid" :
+      curImg = getImgFile(imgName);
+      animate(imgName, 'invalid.gif', '0');
+      animate(imgName, curImg, '300');
+      break;
+
+    case "highlight" :
+      curImgFile = getImgFile(imgName);
+      flashImg = getFlashImg(curImgFile);
+      updateImg(imgName, flashImg);
+      break;
+
+    case "flash" :
+      curImgFile = getImgFile(imgName);
+      flashImg = getFlashImg(curImgFile);
+      animate(imgName, flashImg, '0');
+      animate(imgName, curImgFile, '1000');
+      break;
+
+    case "p1" :
+      updateCell(rowNum, colNum, 'p1');
+      updateImg(imgName, 'p1.gif');
+      break;
+
+    case "p2" :
+      updateCell(rowNum, colNum, 'p2');
+      updateImg(imgName, 'p2.gif');
+      break;
+
+    case "flipkill" :
+      updateCell(rowNum, colNum, 'empty');
+      animate(imgName, 'flip0.gif', ' 300');
+      animate(imgName, 'flip1.gif', ' 400');
+      animate(imgName, 'flip2.gif', ' 500');
+      animate(imgName, 'flip3.gif', ' 600');
+      animate(imgName, 'flip4.gif', ' 700');
+      animate(imgName, 'flip5.gif', ' 800');
+      animate(imgName, 'flip0.gif', ' 900');
+      animate(imgName, 'flip1.gif', ' 1000');
+      animate(imgName, 'flip2.gif', ' 1100');
+      animate(imgName, 'flip3.gif', ' 1200');
+      animate(imgName, 'vanish1.gif', ' 1300');
+      animate(imgName, 'vanish2.gif', ' 1400');
+      animate(imgName, 'empty.gif', ' 1500');
+      break;
+
+    case "angry" :
+      curImgFile = getImgFile(imgName);
+      angryImg = getAngryImg(curImgFile);
+      animate(imgName, angryImg  , ' 200');
+      animate(imgName, curImgFile, '1000');
+      break;
+
+    case "yinyang" :
+      updateCell(rowNum, colNum, whosTurn);
+      updateImg(imgName, 'yinyang.gif');
+
+        if (whosTurn == "p1") {
+          animate(imgName, "p1.gif", 1000);
+        }else{
+          animate(imgName, "p2.gif", 1000);
+        }    
+
+      break;
+
+    case "flip" :
+      if (checkStatus(rowNum, colNum) == "p1") {
+        updateCell(rowNum, colNum, 'p2');
+        animate(imgName, 'flip0.gif', ' 300');
+        animate(imgName, 'flip1.gif', ' 350');
+        animate(imgName, 'flip2.gif', ' 400');
+        animate(imgName, 'flip3.gif', ' 450');
+        animate(imgName, 'flip4.gif', ' 500');
+        animate(imgName, 'flip5.gif', ' 550');
+        animate(imgName, 'flip0.gif', ' 600');
+        animate(imgName, 'flip1.gif', ' 650');
+        animate(imgName, 'flip2.gif', ' 700');
+        animate(imgName, 'flip3.gif', ' 750');
+        animate(imgName, 'flip4.gif', ' 800');
+        animate(imgName, 'flip5.gif', ' 850');
+        animate(imgName, 'p2.gif',    ' 900');
+      }else{
+        if (checkStatus(rowNum, colNum) == "p2") {
+          updateCell(rowNum, colNum, 'p1');
+          animate(imgName, 'flip0.gif', ' 300');
+          animate(imgName, 'flip1.gif', ' 350');
+          animate(imgName, 'flip2.gif', ' 400');
+          animate(imgName, 'flip3.gif', ' 450');
+          animate(imgName, 'flip4.gif', ' 500');
+          animate(imgName, 'flip5.gif', ' 550');
+          animate(imgName, 'flip0.gif', ' 600');
+          animate(imgName, 'flip1.gif', ' 650');
+          animate(imgName, 'flip2.gif', ' 700');
+          animate(imgName, 'flip3.gif', ' 750');
+          animate(imgName, 'flip4.gif', ' 800');
+          animate(imgName, 'flip5.gif', ' 850');
+          animate(imgName, 'p1.gif',    ' 900');
+        }
+      }
+      break;
+
+    default :
+      alert("invalid cell value");
+  }
+}
+
+
+
+<!---------------- INTERMEDIATE LEVEL GAME FUNCTIONS --------------//-->
+
+function setMove(iconChosen) {
+  moveType = iconChosen;
+
+  resetMenuImages();
+  curImg = getImgFile(iconChosen);
+  newImg = getFlashImg(curImg);
+  updateImg(iconChosen, newImg);
+}
+
+
+function checkMove(rowNum, colNum) {
+
+  var startRow, startCol, endRow, endCol, ckCol, ckRow, ckStatus = "invalid";
+
+  if (checkStatus(rowNum, colNum) == "empty") {
+
+    startRow = rowStart(rowNum, 1);
+    endRow = rowEnd(rowNum, 1);
+    startCol = colStart(colNum, 1);
+    endCol = colEnd(colNum, 1);
+
+    for (ckRow = startRow; ckRow <= endRow; ckRow++) {
+
+      for (ckCol = startCol; ckCol <= endCol; ckCol++) {
+
+        if (checkStatus(ckRow, ckCol) == whosTurn) {        
+          ckStatus = "valid";
+        }
+      }
+    }
+  }
+
+  return ckStatus;
+}
+
+
+function processNormal(rowNum, colNum) {
+
+  if (whosTurn == "p1") {
+    cellAction(rowNum, colNum, "p1");
+  }else{
+    cellAction(rowNum, colNum, "p2");
+  }    
+
+  startRow = rowStart(rowNum, 1);
+  endRow = rowEnd(rowNum, 1);
+  startCol = colStart(colNum, 1);
+  endCol = colEnd(colNum, 1);
+
+  for (ckRow = startRow; ckRow <= endRow; ckRow++) {
+
+    for (ckCol = startCol; ckCol <= endCol; ckCol++) {
+
+      if (checkStatus(ckRow, ckCol) == opponent) {        
+        cellAction(ckRow, ckCol, "flipkill");
+      }else{
+
+        if (ckRow == rowNum && ckCol == colNum) { 
+          cellAction(ckRow, ckCol, "angry");
+        }
+      }
+    }
+  }
+}
+
+
+function processYinYang(rowNum, colNum) {
+
+  cellAction(rowNum, colNum, "yinyang");
+
+  for (ckRow = 1; ckRow <= maxSize; ckRow++) {
+
+    if (ckRow != rowNum) {        
+      cellAction(ckRow, colNum, "flip");
+    }
+  }
+
+  for (ckCol = 1; ckCol <= maxSize; ckCol++) {
+
+    if (ckCol != colNum) {        
+      cellAction(rowNum, ckCol, "flip");
+    }
+  }
+
+}
+
+
+function processTurn(procRow, procCol, typeOfMove) {
+
+  switch (typeOfMove) {
+
+    case "normal" :
+      processNormal(procRow, procCol);
+      break;
+
+    case "yinyang" :
+      processYinYang(procRow, procCol);
+      break;
+
+    default :
+      alert("invalid move type");
+  }
+
+}
+
+
+function changeTurn() {
+  if (whosTurn == "p1") {
+    whosTurn = "p2";
+    opponent = "p1";
+    animate("normal", "p2_1.gif", 1000)
+  }else{
+    whosTurn = "p1";
+    opponent = "p2";
+    animate("normal", "p1_1.gif", 1000)
+  }    
+
+ setMove('normal');
+}
+
+
+function checkGame() {
+  var winner = "none";
+  var p1Found = false; 
+  var p2Found = false;
+
+  for (ckRow = 1; ckRow <= maxSize; ckRow++) {
+
+    for (ckCol = 1; ckCol <= maxSize; ckCol++) {
+      
+      if (checkStatus(ckRow, ckCol) == "p1") { p1Found = true; }
+      if (checkStatus(ckRow, ckCol) == "p2") { p2Found = true; }
+    }
+  }
+
+  if (checkStatus(1, 1) == "p2") { winner = "Player 2"; }
+
+  if (checkStatus(maxSize, maxSize) == "p1") { winner = "Player 1"; }
+
+  if (!(p2Found)) { winner = "Player 1"; }  
+  if (!(p1Found)) { winner = "Player 2"; }  
+
+  if (winner != "none") { 
+    gameOver = true;
+    setTimeout("alert('We have a winner!')", 1000);
+  }
+
+  for (ckRow = 1; ckRow <= maxSize; ckRow++) {
+
+    for (ckCol = 1; ckCol <= maxSize; ckCol++) {
+      
+      if ((checkStatus(ckRow, ckCol) == "p1") && (winner == "Player 1")) { 
+        eval("setTimeout(\"cellAction(" + ckRow + ", " + ckCol + ", 'highlight')\", 1200)");
+      }
+
+      if ((checkStatus(ckRow, ckCol) == "p2") && (winner == "Player 2")) { 
+        eval("setTimeout(\"cellAction(" + ckRow + ", " + ckCol+ ", 'highlight')\", 1200)");
+      }
+    }
+  }
+
+
+}
+
+
+
+<!---------------- PRIMARY GAME DRIVER --------------//-->
+
+function cellClick(rowNo, colNo) {
+
+  if ( !(gameOver)) {
+
+    if (checkMove(rowNo, colNo) == "valid") {
+
+      processTurn(rowNo, colNo, moveType);
+
+      checkGame();
+
+      changeTurn();
+
+    }else{
+
+      cellAction(rowNo, colNo, "invalid");
+  
+    }
+  }
+}
+
+
+
+//--></SCRIPT>
+</HEAD>
+
+<body bgcolor="#848484"   
+  onLoad="MM_preloadImages('p1.gif','p1_1.gif','p1_a.gif',
+                           'p2.gif','p2_1.gif','p2_a.gif',
+                           'dead0.gif','dead1.gif',
+                           'flip0.gif','flip1.gif','flip2.gif',
+                           'flip3.gif','flip4.gif','flip5.gif',
+                           'vanish1.gif','vanish2.gif',
+                           'invalid.gif',
+                           'empty.gif','empty_1.gif',
+                           'yinyang.gif','yinyang_1.gif',
+                           'shroom.gif',
+                           'nuke.gif',
+                           'fire.gif')"> 
+
+</BODY>
+
+</HTML>
