@@ -1,0 +1,354 @@
+<html>
+
+<head>
+
+<script language="JavaScript">
+
+<!--
+
+Custom = new Object();
+CustLink = new Object();
+CharCode = new Object();
+LcnsCode = new Object();
+SiteCode = new Object();
+
+<!-- DB structure: name; link; char; lcns; site; scal; afil; styl; base -->
+Custom[0]  = 31
+Custom[1]  = "Bane;              dc/bane.htm;          2; 1; 1; 1;  2; 2;  6"
+Custom[2]  = "BudMan;            misc/budman.htm;      3; 4; 1; 4;  3; 4;  4"
+Custom[3]  = "Daredevil;         marvel/daredevl.htm;  6; 2; 1; 2;  0; 2;  5"
+Custom[4]  = "Dr. Fate;          dc_6/dr_fate.htm;     7; 1; 1; 3;  8; 2; 41"
+Custom[5]  = "Etrigan;           dc/etrigan.htm;       8; 1; 1; 1;  2; 7; 40"
+Custom[6]  = "Etrigan;           dc_6/etrigan.htm;     8; 1; 1; 3;  2; 2; 27"
+Custom[7]  = "Goro;              mk/goro.htm;         11; 3; 1; 2; 10; 4; 39"
+Custom[8]  = "Guardsman;         marvel/guardsmn.htm; 12; 2; 1; 2;  6; 2; 28"
+Custom[9]  = "Heatwave;          dc/heatwave.htm;     13; 1; 1; 1;  5; 7; 33"
+Custom[10] = "Killer Croc;       dc/croc.htm;         14; 1; 1; 1;  2; 7;  8"
+Custom[11] = "Kitana;            mk/kitana.htm;       15; 3; 1; 2; 10; 4; 20"
+Custom[12] = "Korvak;            marvel/korvak.htm;   16; 2; 1; 2;  1; 2;  9"
+Custom[13] = "Liu Kang;          mk/liukang.htm;      17; 3; 1; 2; 10; 4; 19"
+Custom[14] = "Martian Manhunter; dc/martian.htm;      18; 1; 1; 2;  7; 7;  3"
+Custom[15] = "Metallo;           dc_6/metallo.htm;    19; 1; 1; 3; 11; 2;  2"
+Custom[16] = "Mirror Master;     dc/mirror.htm;       20; 1; 1; 1;  5; 7;  7"
+Custom[17] = "Pit;               mk/thepit.htm;       22; 3; 1; 2; 10; 4; 14"
+Custom[18] = "Radioactive Man;   marvel/rad_man.htm;  23; 2; 1; 2;  9; 2; 15"
+Custom[19] = "Reverse Flash;     dc/zoom.htm;         24; 1; 1; 1;  5; 7; 11"
+Custom[20] = "Scorpion;          mk/scorpion.htm;     25; 3; 1; 2; 10; 4; 12"
+Custom[21] = "Sektor;            mk/sektor.htm;       26; 3; 1; 2; 10; 4; 34"
+Custom[22] = "Smoke;             mk/smoke.htm;        27; 3; 1; 2; 10; 4; 34"
+Custom[23] = "Vision;            marvel/vision.htm;   28; 2; 1; 2;  1; 2; 32"
+Custom[24] = "Abra Kadabra;      page12.html;          1; 1; 2; 3;  5; 2; 23"
+Custom[25] = "Captain Boomerang; page13.html;          4; 1; 2; 3;  5; 2; 18"
+Custom[26] = "Captain Cold;      page14.html;          5; 1; 2; 3;  5; 2; 18"
+Custom[27] = "Flash;             page11.html;          9; 1; 2; 3;  4; 2; 12"
+Custom[28] = "Flash Rogues;      page21.html;         10; 1; 2; 3;  5; 2;  0"
+Custom[29] = "Heatwave;          page15.html;         13; 1; 2; 3;  5; 2; 36"
+Custom[30] = "Mirror Master;     page16.html;         20; 1; 2; 3;  5; 2; 29"
+Custom[31] = "Pied Piper;        page24.html;         21; 1; 2; 3;  5; 2; 18"
+
+
+SiteName = new Object();
+SiteLink = new Object();
+SiteBase = new Object();
+
+SiteName[0] = 2
+SiteName[1] = "Arkenyon"
+SiteName[2] = "Yellow Thing"
+
+SiteLink[0] = 2
+SiteLink[1] = "../WebStripper/protected.html#link=http://fbox.vt.edu:10021/R/rkenyon/customs/"
+SiteLink[2] = "../WebStripper/protected.html#link=http://www.geocities.com/theyellowthing/"
+
+SiteBase[0] = 2
+SiteBase[1] = "../WebStripper/protected.html#link=http://filebox.vt.edu/users/rkenyon/customs/search2/customs.htm"
+SiteBase[2] = "index.html"
+
+
+function getElement(indexNo, elementNo) {
+  var sepChar=";", curElement=1, sepStart=0, sepStop=-1;
+
+  recString = Custom[indexNo];
+
+  while (curElement <= elementNo) {
+    sepStart = sepStop + 1;
+    while (recString.charAt(sepStart) == " ") sepStart++;
+
+    sepStop = recString.indexOf(sepChar, sepStart);
+    if (sepStop == -1) sepStop = recString.length;
+
+    curElement++;
+  }
+
+  retElement = recString.substring(sepStart, sepStop);
+ 
+  return retElement;
+}
+
+
+function openResultPage() {
+  parent.results.document.open ("text/html");
+  parent.results.document.writeln ("<html>");
+  parent.results.document.writeln ("<head>");
+  parent.results.document.writeln ("</head>");
+  parent.results.document.writeln ("<body text=#000000 bgcolor=#33CCFF link=#0000EE vlink=#551A8B alink=#FF0000>");
+  parent.results.document.writeln ("<h3><center><font color=#FF0000>Search Results</center></font></h3>");
+}
+
+
+function closeResultPage() {
+  parent.results.document.writeln ("</body>");
+  parent.results.document.writeln ("</html>");
+  parent.results.document.close();
+}
+
+
+function checkCust(custIdx, charIdx, lcnsIdx, siteIdx, scalIdx, afilIdx, stylIdx, baseIdx) {
+  if ( !(charIdx == 0) && !(charIdx == getElement(custIdx, 3))) return false;
+  if ( !(lcnsIdx == 0) && !(lcnsIdx == getElement(custIdx, 4))) return false;
+  if ( !(siteIdx == 0) && !(siteIdx == getElement(custIdx, 5))) return false;
+  if ( !(scalIdx == 0) && !(scalIdx == getElement(custIdx, 6))) return false;
+  if ( !(afilIdx == 0) && !(afilIdx == getElement(custIdx, 7))) return false;
+  if ( !(stylIdx == 0) && !(stylIdx == getElement(custIdx, 8))) return false;
+  if ( !(baseIdx == 0) && !(baseIdx == getElement(custIdx, 9))) return false;
+
+  return true;
+}
+
+
+function getLinks() {
+  var charNo = document.custform.selChar.selectedIndex;
+  var lcnsNo = document.custform.selLcns.selectedIndex;
+  var siteNo = document.custform.selSite.selectedIndex;
+  var scalNo = document.custform.selScal.selectedIndex;
+  var afilNo = document.custform.selAfil.selectedIndex;
+  var stylNo = document.custform.selStyl.selectedIndex;
+  var baseNo = document.custform.selBase.selectedIndex;
+  var Found = false;
+  var prevSite = 0;
+
+  openResultPage();
+
+  for (custNo = 1; custNo <= Custom[0]; custNo++) {
+
+    
+    if (checkCust(custNo, charNo, lcnsNo, siteNo, scalNo, afilNo, stylNo, baseNo)) {
+      Found = true;
+
+      siteIndex = getElement(custNo, 5);
+
+      if (!(prevSite == siteIndex)) { 
+
+        if (!(prevSite == 0))
+          parent.results.document.writeln("<BR><BR>")
+
+        siteStr  = "<B><A HREF=\"";
+        siteStr += SiteLink[siteIndex] + SiteBase[siteIndex];
+        siteStr += "\" target=\"_new\">";
+        siteStr += SiteName[siteIndex] + "</A></B>";
+
+        parent.results.document.writeln(siteStr);
+
+        prevSite = siteIndex;
+      }
+
+      linkStr  = "<LI><B><A HREF=\"";
+      linkStr += SiteLink[siteIndex] + getElement(custNo, 2);
+      linkStr += "\" target=\"display\">";
+      linkStr += getElement(custNo, 1) + "</A></B>";
+
+      parent.results.document.writeln(linkStr);
+    }
+  }
+  
+  if (!(Found)) parent.results.document.writeln ("No matches found.");
+
+  closeResultPage();
+}
+
+
+//--></SCRIPT>
+</HEAD>
+
+
+<body text="#000000" bgcolor="#FF6666" link="#0000EE" vlink="#551A8B" alink="#FF0000" marginheight="0" marginwidth="0" leftmargin="0" topmargin="0">
+
+<form name="custform">   
+  
+<table border="0">
+
+  <td>
+    <nobr><input type=RADIO name="group1" value="radLcns" checked> 
+    <b>License:</B></NOBR><br>
+
+    <nobr><input type=RADIO name="group1" value="radAfil"> 
+    <b>Affiliation:</B></NOBR><br>
+
+    <nobr><input type=RADIO name="group1" value="radChar"> 
+    <b>Character:</B></NOBR>   
+  </TD>
+
+  <td>
+  <select name="selLcns" size=1>
+    <option>ALL
+    <option>DC
+    <option>Marvel
+    <option>Midway
+    <option>Other
+  </SELECT><br>
+
+  <select name="selAfil" size=1>
+    <option>ALL
+    <option>Avengers
+    <option>Batman
+    <option>beer
+    <option>Flash
+    <option>Flash Rogues
+    <option>Iron Man
+    <option>JLA
+    <option>JSA
+    <option>Masters of Evil
+    <option>Mortal Kombat
+    <option>Superman
+  </SELECT><br>
+
+  <select name="selChar" size=1>
+    <option>ALL
+    <option>Abra Kadabra
+    <option>Bane
+    <option>BudMan
+    <option>Captain Boomerang
+    <option>Captain Cold
+    <option>Daredevil
+    <option>Dr. Fate
+    <option>Etrigan the Demon
+    <option>Flash
+    <option>Flash Rogues
+    <option>Goro
+    <option>Guardsman
+    <option>Heatwave
+    <option>Killer Croc
+    <option>Kitana
+    <option>Korvak
+    <option>Liu Kang
+    <option>Martian Manhunter
+    <option>Metallo
+    <option>Mirror Master
+    <option>Pied Piper
+    <option>Pit (MK)
+    <option>Radioactive Man
+    <option>Reverse Flash
+    <option>Scorpion (MK)
+    <option>Sektor
+    <option>Smoke (MK)
+    <option>Vision
+  </SELECT><br>
+  </TD>
+
+  <td>&nbsp;&nbsp;</TD>
+  <td bgcolor="#33CCFF">&nbsp;</TD>
+  <td>&nbsp;&nbsp;</TD>
+
+  <td>
+    <b>Scale:</B><br>
+    <b>Style:</B><br>
+    <b><a href="base_abr.html" target="display">Base:</A></B>
+  </TD>
+
+  <td>
+  <select name="selScal" size=1>
+    <option>ALL
+    <option>5 in
+    <option>5 1/2 in
+    <option>6 in
+    <option>6 ft
+    <option>Other
+  </SELECT><br>
+
+  <select name="selStyl" size=1>
+    <option>ALL
+    <option>animated
+    <option>comic
+    <option>fantasy
+    <option>game
+    <option>realistic
+    <option>SMOS
+    <option>TJ/JLA
+  </SELECT><br>
+
+  <select name="selBase" size=1>
+    <option>ALL
+    <option>Abomination
+    <option>Apocalypse (MF)
+    <option>Bane (B&R)
+    <option>beer cans
+    <option>Beetle
+    <option>Bishop (MF)
+    <option>Black Lightning (TJ)
+    <option>Bloodhawk (X2099)
+    <option>Captain Marvel (10 in)
+    <option>Dan Severin (WWF)
+    <option>Daredevil (WS)
+    <option>Ethan Hunt (MI)
+    <option>Flash (TJ)
+    <option>foam core
+    <option>Goldberg
+    <option>Ghost Rider
+    <option>Gray Hulk
+    <option>Grillo (WoV)
+    <option>Hercules (HTLJ)
+    <option>Jade (MK)
+    <option>Jean Grey (AoA)
+    <option>Leader Hulk
+    <option>Komodo (WoV)
+    <option>Matt Murdock (ATeam)
+    <option>Mesomorph (HTLJ)
+    <option>Owen Hart (WWF)
+    <option>Paul White (MS)
+    <option>Power Ranger
+    <option>Rambo (Coleco)
+    <option>Scorpion (SAS)
+    <option>Super Powers
+    <option>Silver Surfer (AS)
+    <option>Starship Trooper
+    <option>Steel (Movie)
+    <option>Superboy (SMOS)
+    <option>Torch (BS)
+    <option>Triton (FF)
+    <option>Val Venus (WWF)
+    <option>Wolverine (Ons)
+    <option>Wolverine (WW)
+    <option>Zorro
+  </SELECT><br>
+
+  <td>&nbsp;&nbsp;</TD>
+  <td bgcolor="#33CCFF">&nbsp;</TD>
+  <td>&nbsp;&nbsp;</TD>
+
+
+  <td valign="top">
+  <b>Web Site:</B><br>
+  <select name="selSite" size=1>
+    <option>ALL
+    <option>Arkenyon's
+    <option>Yellow Thing
+    <option>Other
+  </SELECT><br>
+  </TD>
+
+  <td>&nbsp;&nbsp;</TD>
+  <td bgcolor="#33CCFF">&nbsp;</TD>
+  <td>&nbsp;&nbsp;</TD>
+
+  <td valign="top">
+    <center>
+    <input type="button" value="SEARCH" onclick="getLinks()"><br><br>
+    <input type="button" value="Reset" onclick="parent.location.reload(true)">
+    </CENTER>
+  </TD>
+
+  </TABLE>
+</FORM>    
+
+</BODY>
+
+</HTML>
